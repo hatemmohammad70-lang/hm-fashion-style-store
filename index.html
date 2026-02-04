@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>hm fashion style | Ramadan Wheel</title>
+    <style>
+        :root {
+            --bg1: #0b3b2e;
+            --bg2: #0f5b46;
+            --card: rgba(255, 255, 255, 0.10);
+            --border: rgba(255, 255, 255, 0.18);
+            --gold: #f7c948;
+            --hot: #ff4d6d;
+            --white: #fff;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: radial-gradient(circle at top, var(--bg2), var(--bg1));
+            color: var(--white);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 22px;
+            text-align: center;
+        }
+
+        .wrap {
+            max-width: 920px;
+            width: 100%;
+        }
+
+        .hero {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            padding: 22px;
+            backdrop-filter: blur(6px);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        .badge {
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(247, 201, 72, 0.14);
+            border: 1px solid rgba(247, 201, 72, 0.35);
+            color: #ffe8b5;
+            font-weight: 900;
+        }
+
+        h1 {
+            margin: 10px 0 6px;
+            font-size: 30px;
+        }
+
+        p {
+            margin: 6px 0;
+            opacity: 0.95;
+            line-height: 1.6
+        }
+
+        .grid {
+            margin-top: 16px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            align-items: center;
+        }
+
+        @media (max-width:860px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.10);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 18px;
+            padding: 16px;
+        }
+
+        /* Wheel */
+        .wheelWrap {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            margin: 14px auto 8px;
+        }
+
+        canvas {
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+            background: #fff;
+        }
+
+        .pointer {
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 14px solid transparent;
+            border-right: 14px solid transparent;
+            border-bottom: 26px solid var(--gold);
+            filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.3));
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 14px;
+            padding: 12px 16px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: transform .06s ease, opacity .2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-hot {
+            background: var(--hot);
+            color: white;
+        }
+
+        .btn-dark {
+            background: #0f172a;
+            color: white;
+        }
+
+        .btn-light {
+            background: #eef2ff;
+            color: #0f172a;
+        }
+
+        .btn[disabled] {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        .result {
+            margin-top: 10px;
+            font-size: 20px;
+            font-weight: 900;
+        }
+
+        .box {
+            margin-top: 10px;
+            background: rgba(255, 255, 255, 0.10);
+            border: 1px dashed rgba(255, 255, 255, 0.28);
+            border-radius: 14px;
+            padding: 12px;
+            text-align: right;
+        }
+
+        .code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 18px;
+            font-weight: 1000;
+            letter-spacing: 1px;
+            color: #ffe8b5;
+        }
+
+        .timer {
+            margin-top: 10px;
+            font-weight: 900;
+            color: #ffe8b5;
+        }
+
+        .small {
+            font-size: 13px;
+            opacity: 0.85;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="hero">
+            <div class="badge">🌙 دولاب خصومات رمضان</div>
+            <h1>hm fashion style</h1>
+            <p>لفّة واحدة فقط 🎯 خدي خصمك واطلبي مباشرة على واتساب.</p>
+
+            <div class="grid">
+                <div class="panel">
+                    <div class="wheelWrap">
+                        <div class="pointer"></div>
+                        <canvas id="wheel" width="320" height="320"></canvas>
+                    </div>
+
+                    <div class="row">
+                        <button class="btn btn-hot" id="spinBtn">🔥 لفّي الآن</button>
+                        <button class="btn btn-light" id="resetBtn" title="للاختبار عندك فقط">♻️ تصفير
+                            (للتجربة)</button>
+                    </div>
+
+                    <div class="small" id="onceNote">⚠️ ملاحظة: مسموح لفة واحدة فقط لكل جهاز.</div>
+                    <div class="result" id="result"></div>
+                    <div class="timer" id="timer"></div>
+                </div>
+
+                <div class="panel" style="text-align:right;">
+                    <h2 style="margin:0 0 8px;">📦 كيف بطلب؟</h2>
+                    <p style="margin:0 0 10px;">
+                        بعد الفوز رح يظهر زر واتساب برسالة جاهزة + كود الخصم.
+                    </p>
+
+                    <div class="box">
+                        <div class="small">نموذج رسالة (رح تنبعث تلقائيًا):</div>
+                        <div style="margin-top:8px; line-height:1.7;">
+                            مرحبا hm fashion style 🌙<br />
+                            ربحت خصم: <b id="previewPrize">—</b><br />
+                            الكود: <span class="code" id="previewCode">—</span><br />
+                            بدي أطلب: ___<br />
+                            مقاسي: ___ • المدينة: ___
+                        </div>
+                    </div>
+
+                    <div class="row" style="justify-content:flex-start; margin-top:12px;">
+                        <a class="btn btn-dark" id="waBtn" href="#" target="_blank" style="display:none;">💬 اطلبي الآن
+                            واتساب</a>
+                        <button class="btn btn-light" id="copyBtn" style="display:none;">📋 نسخ الكود</button>
+                    </div>
+
+                    <div class="small" style="margin-top:10px;">
+                        * إذا بدك نغيّر الجوائز (نسب/شحن مجاني/هدية) احكيلي وبظبطها.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =========================
+        // إعداداتك
+        // =========================
+        const WHATSAPP_NUMBER = "972544292732"; // رقمك بدون +
+        const BRAND = "hm fashion style";
+
+        // الجوائز (قدّيش بدك)
+        // مهم: خليه واقعي عشان الثقة
+        const PRIZES = [
+            { label: "10% OFF", code: "HM10" },
+            { label: "15% OFF", code: "HM15" },
+            { label: "20% OFF", code: "HM20" },
+            { label: "شحن مجاني", code: "FREESHIP" },
+            { label: "15% OFF", code: "HM15" },
+            { label: "10% OFF", code: "HM10" }
+        ];
+
+        // ألوان شرائح الدولاب
+        const COLORS = ["#ff4d6d", "#ffd166", "#06d6a0", "#118ab2", "#ef476f", "#7bdff2"];
+
+        // مدة حجز الخصم بعد الفوز (بالدقائق)
+        const HOLD_MINUTES = 10;
+
+        // لفة واحدة لكل جهاز (localStorage)
+        const KEY_SPUN = "hm_ramadan_spun_v1";
+        const KEY_WIN = "hm_ramadan_win_v1"; // نخزن الجائزة (label+code+time)
+
+        // =========================
+        // رسم الدولاب
+        // =========================
+        const canvas = document.getElementById("wheel");
+        const ctx = canvas.getContext("2d");
+        const W = canvas.width, H = canvas.height;
+        const cx = W / 2, cy = H / 2;
+        const radius = Math.min(W, H) / 2 - 6;
+
+        function drawWheel() {
+            const n = PRIZES.length;
+            const arc = (Math.PI * 2) / n;
+
+            ctx.clearRect(0, 0, W, H);
+
+            for (let i = 0; i < n; i++) {
+                const start = i * arc;
+                const end = start + arc;
+
+                // slice
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.arc(cx, cy, radius, start, end);
+                ctx.closePath();
+                ctx.fillStyle = COLORS[i % COLORS.length];
+                ctx.fill();
+
+                // text
+                ctx.save();
+                ctx.translate(cx, cy);
+                ctx.rotate(start + arc / 2);
+                ctx.textAlign = "right";
+                ctx.fillStyle = "#fff";
+                ctx.font = "bold 16px Arial";
+                ctx.fillText(PRIZES[i].label, radius - 14, 6);
+                ctx.restore();
+            }
+
+            // center
+            ctx.beginPath();
+            ctx.arc(cx, cy, 34, 0, Math.PI * 2);
+            ctx.fillStyle = "#0f172a";
+            ctx.fill();
+
+            ctx.fillStyle = "#fff";
+            ctx.font = "900 14px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText("SPIN", cx, cy + 5);
+        }
+
+        drawWheel();
+
+        // =========================
+        // Spin logic
+        // =========================
+        const spinBtn = document.getElementById("spinBtn");
+        const resetBtn = document.getElementById("resetBtn");
+        const resultEl = document.getElementById("result");
+        const timerEl = document.getElementById("timer");
+        const waBtn = document.getElementById("waBtn");
+        const copyBtn = document.getElementById("copyBtn");
+        const previewPrize = document.getElementById("previewPrize");
+        const previewCode = document.getElementById("previewCode");
+
+        let spinning = false;
+        let holdTimerInterval = null;
+
+        function format2(n) { return String(n).padStart(2, "0"); }
+
+        function startHoldCountdown(untilMs) {
+            clearInterval(holdTimerInterval);
+            function tick() {
+                const now = Date.now();
+                let diff = untilMs - now;
+                if (diff < 0) diff = 0;
+                const mm = Math.floor(diff / (1000 * 60));
+                const ss = Math.floor((diff % (1000 * 60)) / 1000);
+                timerEl.textContent = diff > 0
+                    ? `⏳ الخصم محجوز لمدة: ${format2(mm)}:${format2(ss)}`
+                    : `انتهى وقت الحجز. (إذا بدك تمدده، خبرني)`;
+                if (diff === 0) clearInterval(holdTimerInterval);
+            }
+            tick();
+            holdTimerInterval = setInterval(tick, 1000);
+        }
+
+        function setWinUI(win) {
+            // win: {label, code, wonAt}
+            resultEl.innerHTML = `🎉 مبروك! ربحتِ <b>${win.label}</b> — الكود: <span class="code">${win.code}</span>`;
+            previewPrize.textContent = win.label;
+            previewCode.textContent = win.code;
+
+            // WhatsApp link
+            const msg =
+                `مرحبا ${BRAND} 🌙
+ربحت خصم: ${win.label}
+الكود: ${win.code}
+بدي أطلب: ___
+مقاسي: ___ • المدينة: ___`;
+            const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+
+            waBtn.href = url;
+            waBtn.style.display = "inline-flex";
+            copyBtn.style.display = "inline-flex";
+
+            copyBtn.onclick = async () => {
+                await navigator.clipboard.writeText(win.code);
+                alert("✅ تم نسخ الكود");
+            };
+
+            // countdown
+            const until = win.wonAt + HOLD_MINUTES * 60 * 1000;
+            startHoldCountdown(until);
+        }
+
+        function loadExistingWin() {
+            const spun = localStorage.getItem(KEY_SPUN);
+            const raw = localStorage.getItem(KEY_WIN);
+            if (spun && raw) {
+                try {
+                    const win = JSON.parse(raw);
+                    // UI
+                    spinBtn.disabled = true;
+                    spinBtn.textContent = "✅ تم اللف";
+                    setWinUI(win);
+                    return true;
+                } catch (e) { }
+            }
+            return false;
+        }
+
+        loadExistingWin();
+
+        spinBtn.addEventListener("click", () => {
+            if (spinning) return;
+
+            // إذا لفّ قبل: امنع
+            if (localStorage.getItem(KEY_SPUN)) {
+                alert("⚠️ مسموح لفة واحدة فقط. إذا بدك للتجربة اضغط (تصفير).");
+                return;
+            }
+
+            spinning = true;
+            spinBtn.disabled = true;
+
+            // نختار جائزة عشوائية
+            const idx = Math.floor(Math.random() * PRIZES.length);
+            const win = {
+                label: PRIZES[idx].label,
+                code: PRIZES[idx].code,
+                wonAt: Date.now()
+            };
+
+            // دوران شكلي (canvas ما بيدور لحاله، بس بنعمل effect بالCSS)
+            const turns = 5 + Math.floor(Math.random() * 4); // 5-8 لفات
+            const n = PRIZES.length;
+            const arcDeg = 360 / n;
+
+            // سهم فوق، يعني القطاع الفائز لازم يجي عند 0deg (فوق)
+            // نضيف offset صغير عشان يكون وسط القطاع
+            const targetDeg = (360 - (idx * arcDeg + arcDeg / 2));
+            const finalDeg = turns * 360 + targetDeg;
+
+            canvas.style.transition = "transform 4.8s cubic-bezier(.12,.8,.1,1)";
+            canvas.style.transform = `rotate(${finalDeg}deg)`;
+
+            setTimeout(() => {
+                // نخزن الفوز + امنع لف تاني
+                localStorage.setItem(KEY_SPUN, "1");
+                localStorage.setItem(KEY_WIN, JSON.stringify(win));
+
+                spinBtn.textContent = "✅ تم اللف";
+                setWinUI(win);
+                spinning = false;
+            }, 4900);
+        });
+
+        // زر التصفير (للتجربة عندك فقط)
+        resetBtn.addEventListener("click", () => {
+            localStorage.removeItem(KEY_SPUN);
+            localStorage.removeItem(KEY_WIN);
+            canvas.style.transition = "none";
+            canvas.style.transform = "rotate(0deg)";
+            resultEl.textContent = "";
+            timerEl.textContent = "";
+            waBtn.style.display = "none";
+            copyBtn.style.display = "none";
+            previewPrize.textContent = "—";
+            previewCode.textContent = "—";
+            spinBtn.disabled = false;
+            spinBtn.textContent = "🔥 لفّي الآن";
+            clearInterval(holdTimerInterval);
+            alert("تم التصفير ✅");
+        });
+    </script>
+</body>
+<div id="popup" style="
+position:fixed;
+bottom:20px;
+left:20px;
+background:white;
+color:black;
+padding:12px 18px;
+border-radius:12px;
+box-shadow:0 10px 25px rgba(0,0,0,0.3);
+display:none;
+font-weight:bold;
+z-index:999;
+">
+    🔥 سارة من حيفا ربحت 15٪
+</div>
+
+<script>
+
+    let messages = [
+        "🔥 سارة من حيفا ربحت 15٪",
+        "🔥 نور من الناصرة طلبت فستان",
+        "🔥 لانا ربحت شحن مجاني",
+        "🔥 آية استفادت من عرض رمضان",
+        "🔥 مريم طلبت قطعتين 😍"
+    ];
+
+    function showPopup() {
+
+        let popup = document.getElementById("popup");
+
+        popup.innerText =
+            messages[Math.floor(Math.random() * messages.length)];
+
+        popup.style.display = "block";
+
+        setTimeout(() => {
+            popup.style.display = "none";
+        }, 4000);
+
+    }
+
+    // يظهر كل 8 ثواني
+    setInterval(showPopup, 8000);
+
+</script>
+
+</html>
